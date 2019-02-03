@@ -2,5 +2,5 @@ language: java
 jdk: openjdk11
 install: true
 script:
-  eureka/gradlew build -p eureka
-  zuul/gradlew build -p zuul
+  "eureka/gradlew build -p eureka"
+  "zuul/gradlew build -p zuul"
