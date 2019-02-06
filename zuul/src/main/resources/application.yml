@@ -10,7 +10,12 @@ zuul:
     account:
       service-id: account-service
       path: /account
-
+    character:
+      service-id: character-service
+      path: /character
+ribbon:
+  ConnectTimeout: 6000
+  ReadTimeout: 6000
 security:
   oauth2:
     resource:
@@ -22,8 +27,5 @@ security:
       user-authorization-uri: https://dev-826281.oktapreview.com/oauth2/default/v1/authorize
       scope: openid profile email
 
-feign:
-  hystrix:
-    enabled: true
-hystrix:
-  shareSecurityContext: true
+
+

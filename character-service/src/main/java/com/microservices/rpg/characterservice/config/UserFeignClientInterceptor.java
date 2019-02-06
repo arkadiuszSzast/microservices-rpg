@@ -1,4 +1,4 @@
-package com.microservices.rpg.zuul.config;
+package com.microservices.rpg.characterservice.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserFeignClientInterceptor implements RequestInterceptor {
-
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TOKEN_TYPE = "Bearer";
 
