@@ -23,9 +23,4 @@ public class AccountController {
         Map<String, String> details = (Map<String, String>) authentication.getUserAuthentication().getDetails();
         return new Account(details.get("sub"), details.get("name"), details.get("email"));
     }
-
-    @GetMapping("/token")
-    String getToken() {
-        return clientContext.getAccessToken().getValue();
-    }
 }

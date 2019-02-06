@@ -13,13 +13,9 @@ zuul:
     character:
       service-id: character-service
       path: /character
-    test:
-      service-id: character-service
-      path: /test
-    token:
-      service-id: account-service
-      path: /token
-
+ribbon:
+  ConnectTimeout: 6000
+  ReadTimeout: 6000
 security:
   oauth2:
     resource:
