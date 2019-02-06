@@ -2,4 +2,4 @@ language: java
 jdk: openjdk11
 install: true
 script:
-  "eureka/gradlew build -p eureka && zuul/gradlew build -p zuul && account-service/gradlew build -p account-service"
+  "eureka/gradlew build -p eureka && zuul/gradlew build -p zuul && account-service/gradlew build -p account-service && character-service/gradlew build -p character-service"
