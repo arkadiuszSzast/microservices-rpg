@@ -1,7 +1,10 @@
 package com.microservices.rpg.characterservice.account;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class Account {
 
+    @Field("id")
     private String id;
     private String name;
     private String email;

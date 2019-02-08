@@ -1,0 +1,11 @@
+migrations:
+  - version: 1.0.0
+    description: add example characters
+    author: Arkadiusz Szast
+    command: {
+      insert: "character",
+      documents: [
+      { name: "GreatWarrior", characterClass: "KNIGHT", "account": { "id": "00uj41y0cei3z4hhh0h7", "name": "Arkadiusz Szast", "email": "szastarek@live.com" }},
+      { name: "UberMage", characterClass: "MAGE", "account": { "id": "00uj41y0cei3z4hhh0h7", "name": "Arkadiusz Szast", "email": "szastarek@live.com" }},
+      ]
+    }
