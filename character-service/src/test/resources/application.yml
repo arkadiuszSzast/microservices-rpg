@@ -6,12 +6,7 @@ spring:
     name: customer-service
   data:
     mongodb:
-      host: localhost
-      port: 27016
-  logging:
-    level:
-      org.springframework.cloud.contract: TRACE
-
+      uri: mongodb://mongoadmin:secret@localhost:27014/character?authSource=admin
 eureka:
   client:
     enabled: false

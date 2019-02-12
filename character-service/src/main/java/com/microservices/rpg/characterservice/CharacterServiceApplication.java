@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableDiscoveryClient
 @EnableResourceServer
 @EnableFeignClients
+@EnableCircuitBreaker
 public class CharacterServiceApplication {
 
     public static void main(String[] args) {

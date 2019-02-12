@@ -1,8 +1,11 @@
 package com.microservices.rpg.characterservice.character;
 
 import com.microservices.rpg.characterservice.account.AccountClient;
+import com.microservices.rpg.characterservice.character.domain.Character;
+import com.microservices.rpg.characterservice.character.domain.CharacterRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,15 +22,15 @@ public class CharacterController {
     }
 
     @GetMapping("/character")
-    public List<Character> getCharacter() {
+    public List<Character> getCharacters() {
         var account = accountClient.getAccount();
         return characterRepository.findByAccount(account);
     }
 
     @PostMapping("/character")
-    public void addCharacter() {
+    public void addCharacter(@RequestBody Character character) {
         var account = accountClient.getAccount();
-        var character = new Character("Character1", CharacterClass.MAGE, account);
+        character.setAccount(account);
         characterRepository.save(character);
     }
 }

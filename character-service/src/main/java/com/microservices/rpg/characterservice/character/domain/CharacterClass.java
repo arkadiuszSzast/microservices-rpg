@@ -1,4 +1,4 @@
-package com.microservices.rpg.characterservice.character;
+package com.microservices.rpg.characterservice.character.domain;
 
 public enum CharacterClass {
     KNIGHT,

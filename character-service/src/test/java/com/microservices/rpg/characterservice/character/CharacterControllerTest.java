@@ -1,41 +1,92 @@
 package com.microservices.rpg.characterservice.character;
 
-import com.netflix.discovery.shared.Application;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification;
-import org.junit.Before;
+import com.microservices.rpg.characterservice.character.domain.Character;
+import com.microservices.rpg.characterservice.character.domain.CharacterClass;
+import com.microservices.rpg.characterservice.character.domain.CharacterRepository;
+import com.microservices.rpg.characterservice.config.LocalRibbonClientConfiguration;
+import com.microservices.rpg.characterservice.db.DbMigration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class})
-public class CharacterControllerTest {
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+public class CharacterControllerTest extends LocalRibbonClientConfiguration {
+
+    private DbMigration dbMigration;
     @Autowired
-    private WebApplicationContext context;
-    private MockMvc mockMvc;
+    private CharacterController characterController;
+    @Autowired
+    private CharacterRepository characterRepository;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        RestAssuredMockMvc.webAppContextSetup(context);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+        dbMigration = new DbMigration();
+        dbMigration.start();
     }
 
     @Test
-    public void shouldReturnCharacter() throws Exception {
-        MockMvcBuilders.webAppContextSetup(this.context).build().perform(get("/character")).andDo(print())
-                .andExpect(status().isOk());
+    public void shouldReturnCharacters() {
+
+        //arrange
+        wiremock.stubFor(get(urlEqualTo("/account"))
+                .willReturn(aResponse().withStatus(200)
+                        .withHeader(HttpHeaders.CONTENT_TYPE,
+                                MediaType.APPLICATION_JSON_VALUE)
+                        .withBody("{ \"id\": \"00uj41y0cei3z4hhh0h7\", \"name\": \"Arkadiusz Szast\", \"email\": \"szastarek@live.com\" }")));
+
+        //act
+        var characters = characterController.getCharacters();
+
+        //asserta
+        assertThat(characters).hasSize(2);
+        assertThat(characters.get(0).getId()).isEqualTo("5c61c2cb6790df5ac495fa71");
+        assertThat(characters.get(1).getId()).isEqualTo("5c61c2cb6790df5ac495fa72");
     }
 
+    @Test
+    public void shouldReturnEmptyListOfCharacters() {
+
+        //arrange
+        wiremock.stubFor(get(urlEqualTo("/account"))
+                .willReturn(aResponse().withStatus(200)
+                        .withHeader(HttpHeaders.CONTENT_TYPE,
+                                MediaType.APPLICATION_JSON_VALUE)
+                        .withBody("{ \"id\": \"00uj41y0cei3z4hhh0g2\", \"name\": \"Joe Doe\", \"email\": \"joeDoe@mail.com\" }")));
+
+        //act
+        var characters = characterController.getCharacters();
+
+        //assert
+        assertThat(characters).hasSize(0);
+    }
+
+    @Test
+    public void shouldAddNewCharacter() {
+
+        //arrange
+        wiremock.stubFor(get(urlEqualTo("/account"))
+                .willReturn(aResponse().withStatus(200)
+                        .withHeader(HttpHeaders.CONTENT_TYPE,
+                                MediaType.APPLICATION_JSON_VALUE)
+                        .withBody("{ \"id\": \"00uj41y0cei3z4hhh0g2\", \"name\": \"Joe Doe\", \"email\": \"joeDoe@mail.com\" }")));
+        var character = new Character("CharacterName", CharacterClass.KNIGHT, null);
+
+        //act
+        characterController.addCharacter(character);
+
+        //assert
+        var characters = characterRepository.findByAccount(character.getAccount());
+        assertThat(characters).hasSize(1);
+        assertThat(characters.get(0)).isEqualTo(character);
+    }
 }

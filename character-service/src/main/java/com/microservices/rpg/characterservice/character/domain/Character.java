@@ -1,4 +1,4 @@
-package com.microservices.rpg.characterservice.character;
+package com.microservices.rpg.characterservice.character.domain;
 
 import com.microservices.rpg.characterservice.account.Account;
 import org.springframework.data.annotation.Id;
