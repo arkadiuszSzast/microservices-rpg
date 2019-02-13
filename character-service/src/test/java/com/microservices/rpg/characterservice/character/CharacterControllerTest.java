@@ -1,5 +1,8 @@
 package com.microservices.rpg.characterservice.character;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.mongobee.exception.MongobeeException;
+import com.microservices.rpg.characterservice.account.Account;
 import com.microservices.rpg.characterservice.character.domain.Character;
 import com.microservices.rpg.characterservice.character.domain.CharacterClass;
 import com.microservices.rpg.characterservice.character.domain.CharacterRepository;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,39 +33,45 @@ public class CharacterControllerTest extends LocalRibbonClientConfiguration {
     private CharacterRepository characterRepository;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws MongobeeException {
         dbMigration = new DbMigration();
-        dbMigration.start();
+        dbMigration.execute();
     }
 
     @Test
-    public void shouldReturnCharacters() {
+    public void shouldReturnCharacters() throws IOException {
 
         //arrange
+        var objectMapper = new ObjectMapper();
+        var accountAsBytes = this.getClass().getResourceAsStream("/json/account/account.json").readAllBytes();
+        var knightCharacterAsBytes = this.getClass().getResourceAsStream("/json/character/knightCharacter.json").readAllBytes();
+        var druidCharacterAsBytes = this.getClass().getResourceAsStream("/json/character/druidCharacter.json").readAllBytes();
+        var knightCharacter = objectMapper.readValue(knightCharacterAsBytes, Character.class);
+        var druidCharacter = objectMapper.readValue(druidCharacterAsBytes, Character.class);
+
         wiremock.stubFor(get(urlEqualTo("/account"))
                 .willReturn(aResponse().withStatus(200)
-                        .withHeader(HttpHeaders.CONTENT_TYPE,
-                                MediaType.APPLICATION_JSON_VALUE)
-                        .withBody("{ \"id\": \"00uj41y0cei3z4hhh0h7\", \"name\": \"Arkadiusz Szast\", \"email\": \"szastarek@live.com\" }")));
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(accountAsBytes)));
 
         //act
         var characters = characterController.getCharacters();
 
-        //asserta
+        //assert
         assertThat(characters).hasSize(2);
-        assertThat(characters.get(0).getId()).isEqualTo("5c61c2cb6790df5ac495fa71");
-        assertThat(characters.get(1).getId()).isEqualTo("5c61c2cb6790df5ac495fa72");
+        assertThat(characters.get(0)).isEqualTo(knightCharacter);
+        assertThat(characters.get(1)).isEqualTo(druidCharacter);
     }
 
     @Test
-    public void shouldReturnEmptyListOfCharacters() {
+    public void shouldReturnEmptyListOfCharacters() throws IOException {
 
         //arrange
+        var account = this.getClass().getResourceAsStream("/json/account/accountWithoutCharacter.json").readAllBytes();
         wiremock.stubFor(get(urlEqualTo("/account"))
                 .willReturn(aResponse().withStatus(200)
-                        .withHeader(HttpHeaders.CONTENT_TYPE,
-                                MediaType.APPLICATION_JSON_VALUE)
-                        .withBody("{ \"id\": \"00uj41y0cei3z4hhh0g2\", \"name\": \"Joe Doe\", \"email\": \"joeDoe@mail.com\" }")));
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(account)));
 
         //act
         var characters = characterController.getCharacters();
@@ -71,15 +81,17 @@ public class CharacterControllerTest extends LocalRibbonClientConfiguration {
     }
 
     @Test
-    public void shouldAddNewCharacter() {
+    public void shouldAddNewCharacter() throws IOException {
 
         //arrange
+        var accountAsBytes = this.getClass().getResourceAsStream("/json/account/accountWithoutCharacter.json").readAllBytes();
+        var objectMapper = new ObjectMapper();
+        var account = objectMapper.readValue(accountAsBytes, Account.class);
         wiremock.stubFor(get(urlEqualTo("/account"))
                 .willReturn(aResponse().withStatus(200)
-                        .withHeader(HttpHeaders.CONTENT_TYPE,
-                                MediaType.APPLICATION_JSON_VALUE)
-                        .withBody("{ \"id\": \"00uj41y0cei3z4hhh0g2\", \"name\": \"Joe Doe\", \"email\": \"joeDoe@mail.com\" }")));
-        var character = new Character("CharacterName", CharacterClass.KNIGHT, null);
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(accountAsBytes)));
+        var character = new Character("CharacterName", CharacterClass.KNIGHT, account);
 
         //act
         characterController.addCharacter(character);

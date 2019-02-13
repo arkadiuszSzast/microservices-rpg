@@ -1,12 +1,4 @@
-server:
-  port: ${PORT:3333}
-
 spring:
-  application:
-    name: customer-service
   data:
     mongodb:
       uri: mongodb://mongoadmin:secret@localhost:27014/character?authSource=admin
-eureka:
-  client:
-    enabled: false
