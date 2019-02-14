@@ -1,0 +1,96 @@
+version: '3.3'
+
+services:
+  character_db:
+    image: mongo
+    container_name: character_db
+    ports:
+      - 27016:27016
+    command: mongod --port 27016
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=character
+    networks:
+      samplenet:
+        ipv4_address: 10.5.0.7
+        aliases:
+          - "character_db"
+
+  character_test_db:
+    image: mongo
+    container_name: character_test_db
+    ports:
+      - 27014:27014
+    command: mongod --port 27014
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=character
+
+  eureka:
+    image: openjdk:11-jdk
+    container_name: eureka
+    ports:
+      - "8761:8761"
+    volumes:
+      - "./eureka/build/libs:/eureka:rw"
+    entrypoint: ["java", "-jar", "/eureka/eureka-0.0.1-SNAPSHOT.jar"]
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+    networks:
+      samplenet:
+        aliases:
+          - "eureka"
+
+  zuul:
+    image: openjdk:11-jdk
+    container_name: zuul
+    ports:
+      - "8081:8081"
+    volumes:
+      - "./zuul/build/libs:/zuul:rw"
+    entrypoint: ["java", "-jar", "/zuul/zuul-0.0.1-SNAPSHOT.jar"]
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+    networks:
+      samplenet:
+        aliases:
+          - "zuul"
+
+  account_service:
+    image: openjdk:11-jdk
+    container_name: account_service
+    volumes:
+      - "./account-service/build/libs:/account-service:rw"
+    entrypoint: ["java", "-jar", "/account-service/account-service-0.0.1-SNAPSHOT.jar"]
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+    networks:
+      samplenet:
+        aliases:
+          - "account-service"
+
+
+  character_service:
+    image: openjdk:11-jdk
+    container_name: character_service
+    volumes:
+      - "./character-service/build/libs:/character-service:rw"
+    entrypoint: ["java", "-jar", "/character-service/character-service-0.0.1-SNAPSHOT.jar"]
+    networks:
+      samplenet:
+        aliases:
+          - "character-service"
+    environment:
+      - spring.data.mongodb.uri=mongodb://mongoadmin:secret@character_db:27016/character?authSource=admin
+      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+    depends_on:
+      - character_db
+
+networks:
+  samplenet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
