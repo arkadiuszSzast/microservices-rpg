@@ -36,6 +36,7 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.1.0.RELEASE'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.1.0.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '2.1.2.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '2.1.0.RELEASE'
     compile 'com.github.mongobee:mongobee:0.13'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.1.2.RELEASE'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
