@@ -28,6 +28,17 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=secret
       - MONGO_INITDB_DATABASE=character
 
+  config-server:
+    image: openjdk:11-jdk
+    container_name: config-server
+    volumes:
+      - "./config-server/build/libs:/config-server:rw"
+    entrypoint: ["java", "-jar", "/config-server/config-0.0.1-SNAPSHOT.jar"]
+    networks:
+      samplenet:
+        aliases:
+          - "config-server"
+
   eureka:
     image: openjdk:11-jdk
     container_name: eureka
@@ -38,6 +49,10 @@ services:
     entrypoint: ["java", "-jar", "/eureka/eureka-0.0.1-SNAPSHOT.jar"]
     environment:
       - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - spring.cloud.config.uri=http://config-server:8888
+    depends_on:
+      - config-server
+    restart: on-failure
     networks:
       samplenet:
         aliases:
@@ -53,6 +68,10 @@ services:
     entrypoint: ["java", "-jar", "/zuul/zuul-0.0.1-SNAPSHOT.jar"]
     environment:
       - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - spring.cloud.config.uri=http://config-server:8888
+    depends_on:
+      - config-server
+    restart: on-failure
     networks:
       samplenet:
         aliases:
@@ -66,6 +85,10 @@ services:
     entrypoint: ["java", "-jar", "/account-service/account-service-0.0.1-SNAPSHOT.jar"]
     environment:
       - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - spring.cloud.config.uri=http://config-server:8888
+    depends_on:
+      - config-server
+    restart: on-failure
     networks:
       samplenet:
         aliases:
@@ -85,8 +108,11 @@ services:
     environment:
       - spring.data.mongodb.uri=mongodb://mongoadmin:secret@character_db:27016/character?authSource=admin
       - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - spring.cloud.config.uri=http://config-server:8888
     depends_on:
       - character_db
+      - config-server
+    restart: on-failure
 
 networks:
   samplenet:

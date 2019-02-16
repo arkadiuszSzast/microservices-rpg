@@ -34,6 +34,7 @@ dependencies {
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
     compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.1.2.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.1.2.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '2.1.0.RELEASE'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
