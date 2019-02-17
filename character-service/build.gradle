@@ -39,6 +39,9 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '2.1.0.RELEASE'
     compile 'com.github.mongobee:mongobee:0.13'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.1.2.RELEASE'
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+    compile group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '5.3'
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation('org.junit.jupiter:junit-jupiter:5.4.0')
     testCompile "com.github.tomakehurst:wiremock-jre8:2.21.0"

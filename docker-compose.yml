@@ -28,6 +28,47 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=secret
       - MONGO_INITDB_DATABASE=character
 
+  elasticsearch:
+    build:
+      context: elasticsearch/
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      samplenet:
+        aliases:
+          - "character-service"
+
+  logstash:
+    build:
+      context: logstash/
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      samplenet:
+        ipv4_address: 10.5.0.10
+        aliases:
+          - "character-service"
+    depends_on:
+      - elasticsearch
+  kibana:
+    build:
+      context: kibana/
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config:ro
+    ports:
+      - "5601:5601"
+    networks:
+      samplenet:
+        aliases:
+          - "character-service"
+    depends_on:
+      - elasticsearch
+
   config-server:
     image: openjdk:11-jdk
     container_name: config-server
