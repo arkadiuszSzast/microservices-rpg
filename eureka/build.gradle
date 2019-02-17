@@ -30,6 +30,9 @@ ext {
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '2.1.0.RELEASE'
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+    compile group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '5.3'
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.4.0-b180830.0438'
 }

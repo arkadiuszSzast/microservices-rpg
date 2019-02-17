@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 public class CharacterController {
+
+    private Logger logger = Logger.getLogger(CharacterController.class.getName());
 
     private final AccountClient accountClient;
     private final CharacterRepository characterRepository;
@@ -23,14 +26,18 @@ public class CharacterController {
 
     @GetMapping("/character")
     public List<Character> getCharacters() {
+        logger.info("Getting user info using feign client");
         var account = accountClient.getAccount();
+        logger.info(String.format("Getting characters of user: %s", account.getId()));
         return characterRepository.findByAccount(account);
     }
 
     @PostMapping("/character")
     public void addCharacter(@RequestBody Character character) {
+        logger.info("Getting user info using feign client");
         var account = accountClient.getAccount();
         character.setAccount(account);
+        logger.info(String.format("Adding new character for user: %s", account.getId()));
         characterRepository.save(character);
     }
 }
