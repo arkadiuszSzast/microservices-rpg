@@ -13,7 +13,6 @@ services:
       - MONGO_INITDB_DATABASE=character
     networks:
       samplenet:
-        ipv4_address: 10.5.0.7
         aliases:
           - "character_db"
 
@@ -28,6 +27,21 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=secret
       - MONGO_INITDB_DATABASE=character
 
+  account_db:
+    image: mongo
+    container_name: account_db
+    ports:
+      - 27013:27013
+    command: mongod --port 27013
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=account
+    networks:
+      samplenet:
+        aliases:
+          - "account_db"
+
   elasticsearch:
     build:
       context: elasticsearch/
@@ -38,7 +52,7 @@ services:
     networks:
       samplenet:
         aliases:
-          - "character-service"
+          - "elasticsearch"
 
   logstash:
     build:
@@ -52,9 +66,10 @@ services:
       samplenet:
         ipv4_address: 10.5.0.10
         aliases:
-          - "character-service"
+          - logstash
     depends_on:
       - elasticsearch
+
   kibana:
     build:
       context: kibana/
@@ -65,7 +80,7 @@ services:
     networks:
       samplenet:
         aliases:
-          - "character-service"
+          - "kibana"
     depends_on:
       - elasticsearch
 
@@ -125,6 +140,7 @@ services:
       - "./account-service/build/libs:/account-service:rw"
     entrypoint: ["java", "-jar", "/account-service/account-service-0.0.1-SNAPSHOT.jar"]
     environment:
+      - spring.data.mongodb.uri=mongodb://mongoadmin:secret@account_db:27013/account?authSource=admin
       - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
       - spring.cloud.config.uri=http://config-server:8888
     depends_on:
@@ -134,7 +150,6 @@ services:
       samplenet:
         aliases:
           - "account-service"
-
 
   character_service:
     image: openjdk:11-jdk
