@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class WebSecurity {
+public class CustomPrincipalExtractor {
 
     private final AccountRepository accountRepository;
     private final AccountCreateService accountCreateService;
 
-    public WebSecurity(AccountRepository accountRepository,
-                       AccountCreateService accountCreateService) {
+    public CustomPrincipalExtractor(AccountRepository accountRepository,
+                                    AccountCreateService accountCreateService) {
         this.accountRepository = accountRepository;
         this.accountCreateService = accountCreateService;
     }
