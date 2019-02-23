@@ -1,6 +1,7 @@
 version: '3.3'
 
 services:
+
   character_db:
     image: mongo
     container_name: character_db
@@ -15,17 +16,6 @@ services:
       samplenet:
         aliases:
           - "character_db"
-
-  character_test_db:
-    image: mongo
-    container_name: character_test_db
-    ports:
-      - 27014:27014
-    command: mongod --port 27014
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
-      - MONGO_INITDB_ROOT_PASSWORD=secret
-      - MONGO_INITDB_DATABASE=character
 
   account_db:
     image: mongo
