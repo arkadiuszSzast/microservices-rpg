@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 @FeignClient("account-service")
 public interface AccountClient {
 
-    @PutMapping("/account/last-login")
+    @PutMapping("/account-service/account/last-login")
     void setLastLogin();
 }
