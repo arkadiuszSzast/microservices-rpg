@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -10,7 +10,7 @@
 
     <appender name="STASH"
               class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>10.5.0.10:5000</destination>
+        <destination>logstash:5000</destination>
 
         <encoder
                 class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
@@ -24,7 +24,7 @@
                 <pattern>
                     <pattern>
                         {
-                        "serviceName": "zuul"
+                        "serviceName": "config-server"
                         }
                     </pattern>
                 </pattern>
