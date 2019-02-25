@@ -1,6 +1,6 @@
 spring:
   application:
-    name: character-service
+    name: payment-service
   profiles:
     active: dev
   cloud:
