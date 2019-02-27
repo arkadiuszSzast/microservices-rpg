@@ -27,8 +27,14 @@ public class SwaggerAggregationConfig implements SwaggerResourcesProvider {
         swaggerResourceCharacter.setLocation("/character-service/v2/api-docs");
         swaggerResourceCharacter.setSwaggerVersion("2.0");
 
+        SwaggerResource swaggerResourcePayment = new SwaggerResource();
+        swaggerResourceCharacter.setName("payment-service");
+        swaggerResourceCharacter.setLocation("/payment-service/v2/api-docs");
+        swaggerResourceCharacter.setSwaggerVersion("2.0");
+
         resources.add(swaggerResourceAccount);
         resources.add(swaggerResourceCharacter);
+        resources.add(swaggerResourcePayment);
         return resources;
     }
 }
